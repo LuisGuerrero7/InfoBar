@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("InfoBar.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5ee5d82339f47c2e73e5c7d05b8c93cc3418e190")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1a82da4cd652f40800d030d7fe908a195db9852d")]
 [assembly: System.Reflection.AssemblyProductAttribute("InfoBar.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("InfoBar.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
