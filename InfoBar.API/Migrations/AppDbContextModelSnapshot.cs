@@ -31,30 +31,6 @@ namespace InfoBar.API.Migrations
                     b.ToTable("Pedidos");
                 });
 
-            modelBuilder.Entity("InfoBar.API.Models.PedidoDetalle", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Cantidad")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("PedidoId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ProductoId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PedidoId");
-
-                    b.HasIndex("ProductoId");
-
-                    b.ToTable("PedidoDetalles");
-                });
-
             modelBuilder.Entity("InfoBar.API.Models.Producto", b =>
                 {
                     b.Property<int>("Id")
@@ -76,19 +52,36 @@ namespace InfoBar.API.Migrations
                     b.ToTable("Productos");
                 });
 
-            modelBuilder.Entity("InfoBar.API.Models.PedidoDetalle", b =>
+            modelBuilder.Entity("PedidoDetalle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("PedidoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("Subtotal")
+                        .HasColumnType("REAL");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PedidoId");
+
+                    b.ToTable("PedidoDetalles");
+                });
+
+            modelBuilder.Entity("PedidoDetalle", b =>
                 {
                     b.HasOne("InfoBar.API.Models.Pedido", null)
                         .WithMany("Detalles")
                         .HasForeignKey("PedidoId");
-
-                    b.HasOne("InfoBar.API.Models.Producto", "Producto")
-                        .WithMany()
-                        .HasForeignKey("ProductoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Producto");
                 });
 
             modelBuilder.Entity("InfoBar.API.Models.Pedido", b =>
