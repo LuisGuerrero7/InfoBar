@@ -31,8 +31,17 @@
 
 ---
 
-## 🛠️ Instalación local
+## 📦 Instalación y uso local
 
-- Clonar el proyecto:
-   ```bash
-   git clone https://github.com/LuisGuerrero7/InfoBar
+```bash
+# Clona el repositorio
+git clone https://github.com/TuUsuario/InfoBar.git
+
+# Entra al frontend
+cd InfoBar.Front
+
+# Instala dependencias
+npm install
+
+# Corre el proyecto
+npm run dev
