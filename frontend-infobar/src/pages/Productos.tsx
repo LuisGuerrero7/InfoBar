@@ -195,7 +195,6 @@ export default function Productos() {
         </Table>
       </TableContainer>
 
-      {/* Modal crear/editar producto */}
       <Dialog open={abrir} onClose={() => setAbrir(false)}>
         <DialogTitle>{modoEdicion ? 'Editar Producto' : 'Nuevo Producto'}</DialogTitle>
         <DialogContent>
@@ -227,7 +226,6 @@ export default function Productos() {
         </DialogActions>
       </Dialog>
 
-      {/* Modal de confirmación para eliminar */}
       <Dialog open={productoAEliminar !== null} onClose={() => setProductoAEliminar(null)}>
         <DialogTitle>Confirmar eliminación</DialogTitle>
         <DialogContent>
