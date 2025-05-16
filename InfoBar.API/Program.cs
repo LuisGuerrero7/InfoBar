@@ -3,15 +3,26 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("PermitirFrontend", policy =>
+    {
+        policy.WithOrigins("https://bug-free-potato-x55jwjrprj69cpp56-5173.app.github.dev")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// EF Core
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=infobar.db"));
 
 var app = builder.Build();
+
+app.UseCors("PermitirFrontend");
 
 if (app.Environment.IsDevelopment())
 {
@@ -19,7 +30,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection(); // Mantén esto solo si tienes HTTPS
+app.UseHttpsRedirection(); 
 
 app.UseAuthorization();
 app.MapControllers();

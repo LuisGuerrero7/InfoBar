@@ -1,26 +1,30 @@
+
 import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#00338D' // Azul oscuro de Infomática
+      main: '#003366',
     },
     secondary: {
-      main: '#00C2FF' // Celeste
+      main: '#29A850',
     },
-    success: {
-      main: '#1ED760' // Verde
+    info: {
+      main: '#00C4F4', 
     },
     background: {
-      default: '#FFFFFF'
+      default: '#f5f7fa', 
     },
     text: {
-      primary: '#000000'
-    }
+      primary: '#000000',
+    },
   },
   typography: {
-    fontFamily: 'Roboto, Arial, sans-serif'
-  }
+    fontFamily: ['"Segoe UI"', 'Roboto', 'Arial'].join(','),
+    h5: {
+      fontWeight: 600,
+    },
+  },
 });
 
 export default theme;

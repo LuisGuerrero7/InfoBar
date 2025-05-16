@@ -1,18 +1,33 @@
-import { AppBar, Toolbar, Typography, Button } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { AppBar, Box, Toolbar, Typography, Button, Link } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 export default function Navbar() {
+  const navigate = useNavigate();
+
   return (
-    <AppBar position="static" color="primary">
+    <AppBar position="static" sx={{ backgroundColor: 'primary.main' }}>
       <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          InfoBar
+        <Typography
+          variant="h6"
+          component={Link}
+          underline="none"
+          color="inherit"
+          sx={{ flexGrow: 1, fontWeight: 'bold', cursor: 'pointer' }}
+          onClick={() => navigate('/')}
+        >
+          INFObar
         </Typography>
-        <Button color="inherit" component={Link} to="/productos">Productos</Button>
-        <Button color="inherit" component={Link} to="/pedidos">Pedidos</Button>
-        <Button color="inherit" component={Link} to="/inventario">Inventario</Button>
+
+        <Button color="inherit" onClick={() => navigate('/productos')}>
+          Productos
+        </Button>
+        <Button color="inherit" onClick={() => navigate('/pedidos')}>
+          Pedidos
+        </Button>
+        <Button color="inherit" onClick={() => navigate('/dashboard')}>
+          Dashboard
+        </Button>
       </Toolbar>
     </AppBar>
   );
 }
-
