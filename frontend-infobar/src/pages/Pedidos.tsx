@@ -184,7 +184,7 @@ export default function Pedidos() {
               options={productos}
               getOptionLabel={(p) => `${p.nombre} - S/ ${p.precio.toFixed(2)} (Stock: ${p.stock})`}
               value={productoSeleccionado}
-              onChange={(e, val) => setProductoSeleccionado(val)}
+              onChange={(_, val) => setProductoSeleccionado(val)}
               renderInput={(params) => <TextField {...params} label="Producto" />}
             />
             <TextField
