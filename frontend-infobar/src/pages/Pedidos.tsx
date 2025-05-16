@@ -191,8 +191,9 @@ export default function Pedidos() {
               label="Cantidad"
               type="number"
               value={cantidad}
-              onChange={(e) => setCantidad(parseInt(e.target.value))}
+              onChange={({ target }) => setCantidad(parseInt(target.value))}
             />
+
             <Button variant="outlined" onClick={agregarDetalle} sx={{ alignSelf: 'flex-start' }}>
               Agregar al pedido
             </Button>
