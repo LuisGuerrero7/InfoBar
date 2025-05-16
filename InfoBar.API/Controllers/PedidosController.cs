@@ -81,10 +81,8 @@ namespace InfoBar.API.Controllers
                     producto.Stock += detalle.Cantidad;
             }
 
-            // Limpiar los detalles antiguos del pedido
             _context.PedidoDetalles.RemoveRange(pedidoExistente.Detalles);
 
-            // Validar nuevo stock y aplicar los detalles actualizados
             foreach (var nuevoDetalle in pedidoActualizado.Detalles)
             {
                 var producto = await _context.Productos.FindAsync(nuevoDetalle.ProductoId);
@@ -96,7 +94,6 @@ namespace InfoBar.API.Controllers
 
                 producto.Stock -= nuevoDetalle.Cantidad;
 
-                // Agregamos el nuevo detalle al pedido existente
                 pedidoExistente.Detalles.Add(new PedidoDetalle
                 {
                     ProductoId = nuevoDetalle.ProductoId,
@@ -104,7 +101,6 @@ namespace InfoBar.API.Controllers
                 });
             }
 
-            // Actualizar fecha (opcional)
             pedidoExistente.Fecha = DateTime.Now;
 
             await _context.SaveChangesAsync();
@@ -121,7 +117,6 @@ namespace InfoBar.API.Controllers
             if (pedido == null)
                 return NotFound("El pedido no existe.");
 
-            // Revertir el stock
             foreach (var detalle in pedido.Detalles)
             {
                 var producto = await _context.Productos.FindAsync(detalle.ProductoId);
@@ -131,7 +126,6 @@ namespace InfoBar.API.Controllers
                 }
             }
 
-            // Eliminar detalles y el pedido
             _context.PedidoDetalles.RemoveRange(pedido.Detalles);
             _context.Pedidos.Remove(pedido);
 

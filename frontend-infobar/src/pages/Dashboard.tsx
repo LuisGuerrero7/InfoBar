@@ -96,10 +96,7 @@ export default function Dashboard() {
                 <Typography variant="subtitle1">Ingresos totales</Typography>
                 <Typography variant="h5" color="success.main">S/ {totalIngresos.toFixed(2)}</Typography>
               </Paper>
-
           </Grid>
-
-
 
           <Paper elevation={3} sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>

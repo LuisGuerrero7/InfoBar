@@ -19,6 +19,7 @@ export default function Productos() {
   const [abrir, setAbrir] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
   const [productoEditandoId, setProductoEditandoId] = useState<number | null>(null);
+  const [productoAEliminar, setProductoAEliminar] = useState<number | null>(null);
   const [nuevoProducto, setNuevoProducto] = useState({ nombre: '', precio: '', stock: '' });
 
   const [mensaje, setMensaje] = useState('');
@@ -107,20 +108,21 @@ export default function Productos() {
     setAbrir(true);
   };
 
-  const handleEliminar = async (id: number) => {
-    if (window.confirm('¿Estás seguro de eliminar este producto?')) {
-      try {
-        await eliminarProducto(id);
-        const data = await getProductos();
-        setProductos(data);
-        setMensaje('Producto eliminado correctamente.');
-        setTipoAlerta('success');
-        setMostrarAlerta(true);
-      } catch (error) {
-        setError('Error al eliminar producto.');
-        setTipoAlerta('error');
-        setMostrarAlerta(true);
-      }
+  const confirmarEliminar = async () => {
+    if (productoAEliminar === null) return;
+    try {
+      await eliminarProducto(productoAEliminar);
+      const data = await getProductos();
+      setProductos(data);
+      setMensaje('Producto eliminado correctamente.');
+      setTipoAlerta('success');
+      setMostrarAlerta(true);
+    } catch (error) {
+      setError('Error al eliminar producto.');
+      setTipoAlerta('error');
+      setMostrarAlerta(true);
+    } finally {
+      setProductoAEliminar(null);
     }
   };
 
@@ -182,7 +184,7 @@ export default function Productos() {
                     variant="outlined"
                     color="error"
                     size="small"
-                    onClick={() => handleEliminar(producto.id)}
+                    onClick={() => setProductoAEliminar(producto.id)}
                   >
                     Eliminar
                   </Button>
@@ -193,6 +195,7 @@ export default function Productos() {
         </Table>
       </TableContainer>
 
+      {/* Modal crear/editar producto */}
       <Dialog open={abrir} onClose={() => setAbrir(false)}>
         <DialogTitle>{modoEdicion ? 'Editar Producto' : 'Nuevo Producto'}</DialogTitle>
         <DialogContent>
@@ -220,6 +223,20 @@ export default function Productos() {
           <Button onClick={() => setAbrir(false)}>Cancelar</Button>
           <Button variant="contained" onClick={handleSubmit}>
             {modoEdicion ? 'Actualizar' : 'Guardar'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal de confirmación para eliminar */}
+      <Dialog open={productoAEliminar !== null} onClose={() => setProductoAEliminar(null)}>
+        <DialogTitle>Confirmar eliminación</DialogTitle>
+        <DialogContent>
+          <Typography>¿Estás seguro de que deseas eliminar este producto?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setProductoAEliminar(null)}>Cancelar</Button>
+          <Button variant="contained" color="error" onClick={confirmarEliminar}>
+            Eliminar
           </Button>
         </DialogActions>
       </Dialog>

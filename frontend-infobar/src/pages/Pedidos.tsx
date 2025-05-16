@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import {
   Autocomplete, Button, Dialog, DialogActions, DialogContent,
   DialogTitle, Snackbar, Stack, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, TextField, Typography, Paper, Alert, Box, Container
+  TableContainer, TableHead, TableRow, TextField, Typography,
+  Paper, Alert, Box, Container
 } from '@mui/material';
 
 import type { Producto } from '../api/productos';
@@ -32,6 +33,7 @@ export default function Pedidos() {
   const [cantidad, setCantidad] = useState(1);
   const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null);
   const [abrirDialog, setAbrirDialog] = useState(false);
+  const [pedidoAEliminar, setPedidoAEliminar] = useState<number | null>(null);
 
   const [mensaje, setMensaje] = useState('');
   const [mostrarAlerta, setMostrarAlerta] = useState(false);
@@ -89,10 +91,10 @@ export default function Pedidos() {
     }
   };
 
-  const handleEliminarPedido = async (id: number) => {
-    if (window.confirm('¿Seguro que deseas eliminar este pedido?')) {
+  const confirmarEliminarPedido = async () => {
+    if (pedidoAEliminar !== null) {
       try {
-        await eliminarPedido(id);
+        await eliminarPedido(pedidoAEliminar);
         const nuevos = await getPedidos();
         setPedidos(nuevos);
         setMensaje('Pedido eliminado');
@@ -102,6 +104,8 @@ export default function Pedidos() {
         setMensaje('Error al eliminar pedido');
         setTipoAlerta('error');
         setMostrarAlerta(true);
+      } finally {
+        setPedidoAEliminar(null);
       }
     }
   };
@@ -161,7 +165,7 @@ export default function Pedidos() {
                   <Button
                     variant="outlined"
                     color="error"
-                    onClick={() => handleEliminarPedido(pedido.id)}
+                    onClick={() => setPedidoAEliminar(pedido.id)}
                   >
                     Eliminar
                   </Button>
@@ -189,11 +193,7 @@ export default function Pedidos() {
               value={cantidad}
               onChange={(e) => setCantidad(parseInt(e.target.value))}
             />
-            <Button
-              variant="outlined"
-              onClick={agregarDetalle}
-              sx={{ alignSelf: 'flex-start' }}
-            >
+            <Button variant="outlined" onClick={agregarDetalle} sx={{ alignSelf: 'flex-start' }}>
               Agregar al pedido
             </Button>
 
@@ -229,6 +229,19 @@ export default function Pedidos() {
           <Button onClick={() => setAbrirDialog(false)}>Cancelar</Button>
           <Button variant="contained" onClick={handleGuardarPedido}>
             Guardar Pedido
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={pedidoAEliminar !== null} onClose={() => setPedidoAEliminar(null)}>
+        <DialogTitle>Confirmar eliminación</DialogTitle>
+        <DialogContent>
+          <Typography>¿Estás seguro de que deseas eliminar este pedido?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPedidoAEliminar(null)}>Cancelar</Button>
+          <Button variant="contained" color="error" onClick={confirmarEliminarPedido}>
+            Eliminar
           </Button>
         </DialogActions>
       </Dialog>
