@@ -3,20 +3,28 @@ import {
   Button, Dialog, DialogTitle, DialogContent,
   DialogActions, TextField, Stack, Typography,
   Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper
+  TableHead, TableRow, Paper, Snackbar, Alert, Box, Container
 } from '@mui/material';
 
 import type { Producto } from '../api/productos';
-import { getProductos, crearProducto } from '../api/productos';
+import {
+  getProductos,
+  crearProducto,
+  actualizarProducto,
+  eliminarProducto
+} from '../api/productos';
 
 export default function Productos() {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [abrir, setAbrir] = useState(false);
-  const [nuevoProducto, setNuevoProducto] = useState({
-    nombre: '',
-    precio: '',
-    stock: ''
-  });
+  const [modoEdicion, setModoEdicion] = useState(false);
+  const [productoEditandoId, setProductoEditandoId] = useState<number | null>(null);
+  const [nuevoProducto, setNuevoProducto] = useState({ nombre: '', precio: '', stock: '' });
+
+  const [mensaje, setMensaje] = useState('');
+  const [error, setError] = useState('');
+  const [mostrarAlerta, setMostrarAlerta] = useState(false);
+  const [tipoAlerta, setTipoAlerta] = useState<'success' | 'error'>('success');
 
   useEffect(() => {
     async function fetchProductos() {
@@ -26,51 +34,159 @@ export default function Productos() {
     fetchProductos();
   }, []);
 
+  const validarCampos = () => {
+    if (!nuevoProducto.nombre || !nuevoProducto.precio || !nuevoProducto.stock) {
+      setError('Todos los campos son obligatorios.');
+      setTipoAlerta('error');
+      setMostrarAlerta(true);
+      return false;
+    }
+
+    const precio = parseFloat(nuevoProducto.precio);
+    const stock = parseInt(nuevoProducto.stock);
+
+    if (isNaN(precio) || precio <= 0) {
+      setError('El precio debe ser un número mayor que 0.');
+      setTipoAlerta('error');
+      setMostrarAlerta(true);
+      return false;
+    }
+
+    if (isNaN(stock) || stock < 0) {
+      setError('El stock debe ser un número mayor o igual a 0.');
+      setTipoAlerta('error');
+      setMostrarAlerta(true);
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async () => {
+    if (!validarCampos()) return;
+
     try {
-      await crearProducto({
+      const productoPayload = {
         nombre: nuevoProducto.nombre,
         precio: parseFloat(nuevoProducto.precio),
         stock: parseInt(nuevoProducto.stock)
-      });
+      };
+
+      if (modoEdicion && productoEditandoId !== null) {
+        await actualizarProducto(productoEditandoId, productoPayload);
+        setMensaje('Producto actualizado correctamente.');
+      } else {
+        await crearProducto(productoPayload);
+        setMensaje('Producto creado correctamente.');
+      }
+
+      setTipoAlerta('success');
+      setMostrarAlerta(true);
       setAbrir(false);
+      setModoEdicion(false);
+      setProductoEditandoId(null);
       setNuevoProducto({ nombre: '', precio: '', stock: '' });
+
       const data = await getProductos();
       setProductos(data);
-    } catch (error) {
-      console.error('Error al crear producto', error);
+    } catch (err) {
+      setError('Hubo un error al guardar el producto.');
+      setTipoAlerta('error');
+      setMostrarAlerta(true);
+    }
+  };
+
+  const abrirEdicion = (producto: Producto) => {
+    setNuevoProducto({
+      nombre: producto.nombre,
+      precio: producto.precio.toString(),
+      stock: producto.stock.toString()
+    });
+    setProductoEditandoId(producto.id);
+    setModoEdicion(true);
+    setAbrir(true);
+  };
+
+  const handleEliminar = async (id: number) => {
+    if (window.confirm('¿Estás seguro de eliminar este producto?')) {
+      try {
+        await eliminarProducto(id);
+        const data = await getProductos();
+        setProductos(data);
+        setMensaje('Producto eliminado correctamente.');
+        setTipoAlerta('success');
+        setMostrarAlerta(true);
+      } catch (error) {
+        setError('Error al eliminar producto.');
+        setTipoAlerta('error');
+        setMostrarAlerta(true);
+      }
     }
   };
 
   return (
-    <>
-      <Button
-        variant="contained"
-        color="secondary"
-        sx={{ mt: 2 }}
-        onClick={() => setAbrir(true)}
-      >
-        Agregar Producto
-      </Button>
+    <Container maxWidth="lg">
+      <Typography variant="h4" align="center" fontWeight="bold" mt={4} color="#0A2F5C">
+        Lista de Productos
+      </Typography>
 
-      <TableContainer component={Paper} sx={{ mt: 2 }}>
-        <Typography variant="h5" sx={{ p: 2 }}>
-          Lista de Productos
-        </Typography>
+      <Box display="flex" justifyContent="flex-end" mt={3}>
+        <Button
+          variant="contained"
+          onClick={() => {
+            setAbrir(true);
+            setModoEdicion(false);
+            setNuevoProducto({ nombre: '', precio: '', stock: '' });
+          }}
+          sx={{
+            backgroundColor: '#00a76f',
+            '&:hover': { backgroundColor: '#007b56' },
+            boxShadow: 2
+          }}
+        >
+          Agregar Producto
+        </Button>
+      </Box>
+
+      <TableContainer component={Paper} elevation={3} sx={{ mt: 3, mb: 5 }}>
         <Table>
           <TableHead>
-            <TableRow>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Precio</TableCell>
-              <TableCell>Stock</TableCell>
+            <TableRow sx={{ backgroundColor: '#f4f6f8' }}>
+              <TableCell><strong>Nombre</strong></TableCell>
+              <TableCell><strong>Precio</strong></TableCell>
+              <TableCell><strong>Stock</strong></TableCell>
+              <TableCell><strong>Acciones</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {productos.map((producto) => (
-              <TableRow key={producto.id}>
+              <TableRow
+                key={producto.id}
+                hover
+                sx={{ transition: '0.3s', '&:hover': { backgroundColor: '#f9fbfd' } }}
+              >
                 <TableCell>{producto.nombre}</TableCell>
                 <TableCell>S/ {producto.precio.toFixed(2)}</TableCell>
                 <TableCell>{producto.stock}</TableCell>
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    size="small"
+                    onClick={() => abrirEdicion(producto)}
+                    sx={{ mr: 1 }}
+                  >
+                    Editar
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="small"
+                    onClick={() => handleEliminar(producto.id)}
+                  >
+                    Eliminar
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -78,7 +194,7 @@ export default function Productos() {
       </TableContainer>
 
       <Dialog open={abrir} onClose={() => setAbrir(false)}>
-        <DialogTitle>Nuevo Producto</DialogTitle>
+        <DialogTitle>{modoEdicion ? 'Editar Producto' : 'Nuevo Producto'}</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
             <TextField
@@ -102,9 +218,22 @@ export default function Productos() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setAbrir(false)}>Cancelar</Button>
-          <Button variant="contained" onClick={handleSubmit}>Guardar</Button>
+          <Button variant="contained" onClick={handleSubmit}>
+            {modoEdicion ? 'Actualizar' : 'Guardar'}
+          </Button>
         </DialogActions>
       </Dialog>
-    </>
+
+      <Snackbar
+        open={mostrarAlerta}
+        autoHideDuration={4000}
+        onClose={() => setMostrarAlerta(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setMostrarAlerta(false)} severity={tipoAlerta} sx={{ width: '100%' }}>
+          {tipoAlerta === 'success' ? mensaje : error}
+        </Alert>
+      </Snackbar>
+    </Container>
   );
 }
