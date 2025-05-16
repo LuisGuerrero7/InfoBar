@@ -37,11 +37,23 @@
 # Clona el repositorio
 git clone https://github.com/TuUsuario/InfoBar.git
 
+#Si esta desde Visual Studio Code
+- Instalar .NET y EF Core CLI (BD)
+dotnet --version
+dotnet tool install --global dotnet-ef
+dotnet ef
+
+#Para lanzar el Backend
+
+dotnet restore          # Instala dependencias
+dotnet ef database update   # Crea la base de datos SQLite
+dotnet run             # Lanza el servidor backend
+
+---> El backend se ejecutará en: http://localhost:5083
+
 # Entra al frontend
 cd InfoBar.Front
-
-# Instala dependencias
 npm install
-
-# Corre el proyecto
 npm run dev
+
+---> El frontend estará en: http://localhost:5173
