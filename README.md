@@ -35,7 +35,7 @@
 
 ```bash
 # Clona el repositorio
-git clone https://github.com/TuUsuario/InfoBar.git
+git clone https://github.com/LuisGuerrero7/InfoBar
 
 #Si esta desde Visual Studio Code
 - Instalar .NET y EF Core CLI (BD)
